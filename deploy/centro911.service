@@ -1,0 +1,19 @@
+[Unit]
+Description=Centro de emergencias 911 (Erlang/OTP)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=centro911
+Group=centro911
+WorkingDirectory=/opt/centro911
+Environment=HOME=/opt/centro911
+ExecStart=/opt/centro911/bin/p67_centro_de_emergencias_911 foreground
+ExecStop=/opt/centro911/bin/p67_centro_de_emergencias_911 stop
+# Si la VM de Erlang completa se cae, systemd la levanta de nuevo.
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

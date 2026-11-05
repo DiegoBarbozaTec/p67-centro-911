@@ -1,0 +1,15 @@
+{application, p67_centro_de_emergencias_911, [
+  {description, "Centro de emergencias 911: despacho de unidades por prioridad y tiempo de viaje"},
+  {vsn, "1.0.0"},
+  {registered, [p67_centro_de_emergencias_911_sup, p67_bitacora, p67_nucleo_sup, p67_unidades_sup,
+                p67_despachador, p67_simulador]},
+  {mod, {p67_centro_de_emergencias_911_app, []}},
+  {applications, [kernel, stdlib, crypto, cowboy, recon]},
+  {env, [
+    {http_port, 8080},
+    {escala_ms_por_min, 250},
+    {timeout_aceptacion_min, 2},
+    {latido_perdido_min, 4},
+    {data_dir, "data"}
+  ]}
+]}.

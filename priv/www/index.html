@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Centro 911 Tijuana</title>
+<style>
+  :root{
+    --bg:#0e1116; --panel:#161b22; --panel2:#1c232c; --line:#2a333e; --text:#e6edf3; --muted:#8b97a5;
+    --ok:#2ea043; --alerta:#d29922; --falla:#f85149; --info:#3b82f6; --p1:#f85149; --p2:#d29922; --p3:#3b82f6;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5}
+  header h1{font-size:17px;margin:0;letter-spacing:.3px}
+  .badge911{background:var(--falla);color:#fff;font-weight:800;border-radius:6px;padding:2px 8px}
+  .con{margin-left:auto;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--falla);display:inline-block}
+  .dot.on{background:var(--ok)}
+  nav{display:flex;gap:4px;padding:8px 16px;background:var(--panel);border-bottom:1px solid var(--line);overflow-x:auto}
+  nav button{background:transparent;border:1px solid transparent;color:var(--muted);padding:6px 12px;border-radius:6px;cursor:pointer;font:inherit;white-space:nowrap}
+  nav button.act{color:var(--text);background:var(--panel2);border-color:var(--line)}
+  main{padding:12px 16px;max-width:1400px;margin:0 auto}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+  .kpi .v{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+  .kpi .l{font-size:12px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;min-width:0}
+  .card h2{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+  .card h2 small{color:var(--muted);font-weight:400}
+  svg.mapa{width:100%;height:auto;display:block;background:#0b0f14;border-radius:6px;cursor:crosshair}
+  .leyenda{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-top:8px}
+  .leyenda span{display:flex;align-items:center;gap:4px}
+  .sw{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .lista{max-height:460px;overflow:auto;display:flex;flex-direction:column;gap:6px}
+  .inc{border:1px solid var(--line);border-left:4px solid var(--p3);border-radius:6px;padding:8px 10px;background:var(--panel2);cursor:pointer}
+  .inc.p1{border-left-color:var(--p1)} .inc.p2{border-left-color:var(--p2)}
+  .inc .t{display:flex;justify-content:space-between;gap:8px;font-weight:600}
+  .inc .s{font-size:12px;color:var(--muted);margin-top:2px}
+  .chip{font-size:11px;padding:1px 7px;border-radius:10px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+  .chip.ok{color:var(--ok);border-color:var(--ok)} .chip.alerta{color:var(--alerta);border-color:var(--alerta)} .chip.falla{color:var(--falla);border-color:var(--falla)} .chip.info{color:var(--info);border-color:var(--info)}
+  .ctrl{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .btn{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:7px 11px;border-radius:6px;cursor:pointer;font:inherit;font-size:13px}
+  .btn:hover{border-color:var(--muted)}
+  .btn.rojo{border-color:#5a2a2a;color:#ffb4ad} .btn.prim{background:var(--info);border-color:var(--info);color:#fff}
+  form.nuevo{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+  form.nuevo input,form.nuevo select{background:var(--bg);border:1px solid var(--line);color:var(--text);padding:7px;border-radius:6px;font:inherit;min-width:0}
+  form.nuevo .full{grid-column:1/-1}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{color:var(--muted);font-weight:500;position:sticky;top:0;background:var(--panel)}
+  tr.click{cursor:pointer} tr.click:hover{background:var(--panel2)}
+  .tabla{overflow:auto;max-height:70vh}
+  .ev{font-family:var(--mono);font-size:12px;padding:5px 0;border-bottom:1px dashed var(--line);display:flex;gap:8px;flex-wrap:wrap}
+  .ev .seq{color:var(--muted);min-width:52px} .ev .n{color:#79c0ff} .ev .h{color:var(--muted);margin-left:auto}
+  .oculto{display:none}
+  #toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);padding:10px 14px;border-radius:8px;max-width:90vw;font-size:13px;display:none;z-index:20}
+  dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:10px;width:min(640px,94vw);padding:16px}
+  dialog::backdrop{background:#000a}
+  .tl{border-left:2px solid var(--line);margin:10px 0 0 6px;padding-left:12px}
+  .tl div{margin-bottom:8px;font-size:13px} .tl b{color:#79c0ff;font-family:var(--mono);font-size:12px}
+  .muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <span class="badge911">911</span>
+  <h1>Centro de Emergencias · Tijuana</h1>
+  <div class="con"><span class="dot" id="dot"></span><span id="conTxt">conectando…</span></div>
+</header>
+<nav>
+  <button class="act" data-vista="panel">Panel en vivo</button>
+  <button data-vista="unidades">Unidades</button>
+  <button data-vista="bitacora">Bitácora</button>
+</nav>
+<main>
+  <div class="kpis" id="kpis"></div>
+
+  <!-- ===================== PANEL ===================== -->
+  <section id="v-panel">
+    <div class="grid">
+      <div class="card">
+        <h2>Mapa operativo <small>toca el mapa para fijar la ubicación de un reporte</small></h2>
+        <svg class="mapa" id="mapa" viewBox="-0.5 -0.5 21 13" preserveAspectRatio="xMidYMid meet"></svg>
+        <div class="leyenda">
+          <span><i class="sw" style="background:var(--ok)"></i>disponible</span>
+          <span><i class="sw" style="background:var(--alerta)"></i>despachada / en camino</span>
+          <span><i class="sw" style="background:var(--info)"></i>en escena / traslado</span>
+          <span><i class="sw" style="background:var(--falla)"></i>fuera de servicio</span>
+          <span>◆ incidente (color = prioridad)</span>
+          <span>▬ cañón y puentes</span>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Incidentes abiertos <small id="nAbiertos"></small></h2>
+        <div class="lista" id="listaInc"></div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:12px">
+      <div class="card">
+        <h2>Nuevo reporte</h2>
+        <form class="nuevo" id="fNuevo">
+          <select name="tipo">
+            <option value="medica">Médica</option><option value="accidente">Accidente</option>
+            <option value="incendio">Incendio</option><option value="fuga_gas">Fuga de gas</option>
+            <option value="delito">Delito</option><option value="rina">Riña</option>
+            <option value="derrumbe">Derrumbe</option><option value="inundacion">Inundación</option>
+            <option value="improcedente">Improcedente (broma/error)</option>
+          </select>
+          <select name="prioridad">
+            <option value="1">Prioridad 1 · riesgo de vida</option>
+            <option value="2" selected>Prioridad 2 · urgente</option>
+            <option value="3">Prioridad 3 · no urgente</option>
+          </select>
+          <input name="x" type="number" step="0.1" min="0" max="20" placeholder="x (km)" required>
+          <input name="y" type="number" step="0.1" min="0" max="12" placeholder="y (km)" required>
+          <input class="full" name="descripcion" placeholder="Descripción del reporte">
+          <button class="btn prim full" type="submit">Registrar llamada</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Simulación y pruebas de caos</h2>
+        <div class="muted" style="font-size:12px">Escenarios del problema</div>
+        <div class="ctrl">
+          <button class="btn" data-sim="turno">Turno 8 h (200 incidentes + 800 improcedentes)</button>
+          <button class="btn" data-sim="accidente_multiple">Accidente múltiple (12 llamadas)</button>
+          <button class="btn" data-sim="sin_ambulancias">Sin ambulancias + P1</button>
+        </div>
+        <div class="muted" style="font-size:12px;margin-top:10px">Inyectar fallas</div>
+        <div class="ctrl">
+          <button class="btn rojo" data-caos="matar_unidad">Matar proceso de unidad</button>
+          <button class="btn rojo" data-caos="perder_comunicacion">Perder comunicación</button>
+          <button class="btn rojo" data-caos="no_acepta">Unidad no acepta</button>
+          <button class="btn rojo" data-caos="matar_despachador">Matar despachador</button>
+        </div>
+        <div class="ctrl" style="margin-top:10px">
+          <button class="btn" id="bVerif">Verificar integridad de bitácora</button>
+          <button class="btn" id="bReset">Reiniciar turno</button>
+          <a class="btn" href="/metrics" target="_blank" style="text-decoration:none">/metrics</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== UNIDADES ===================== -->
+  <section id="v-unidades" class="oculto">
+    <div class="card">
+      <h2>Flota <small id="nUnid"></small></h2>
+      <div class="tabla"><table>
+        <thead><tr><th>Unidad</th><th>Tipo</th><th>Estado</th><th>Incidente</th><th>Posición (km)</th><th>ETA</th><th>Radio</th><th>Reinicios</th></tr></thead>
+        <tbody id="tUnid"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ===================== BITACORA ===================== -->
+  <section id="v-bitacora" class="oculto">
+    <div class="card">
+      <h2>Bitácora auditable <small id="nBit"></small></h2>
+      <div class="muted" style="font-size:12px;margin-bottom:6px">Cada evento se guarda en disco y queda encadenado con SHA-256 al anterior.</div>
+      <div id="listaBit"></div>
+    </div>
+  </section>
+</main>
+
+<dialog id="dlg"><div id="dlgBody"></div><div style="text-align:right;margin-top:10px"><button class="btn" onclick="dlg.close()">Cerrar</button></div></dialog>
+<div id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const ESTADO_UNIDAD = {disponible:'ok', despachada:'alerta', en_camino:'alerta', en_escena:'info', trasladando:'info', fuera_de_servicio:'falla'};
+const COLOR = {ok:'var(--ok)', alerta:'var(--alerta)', info:'var(--info)', falla:'var(--falla)'};
+const COLOR_P = {1:'var(--p1)', 2:'var(--p2)', 3:'var(--p3)'};
+const ESTADO_INC = {recibido:'info', asignando:'alerta', en_espera:'falla', despachado:'alerta', en_sitio:'ok', cerrado:''};
+const TIPO_TXT = {medica:'Médica', accidente:'Accidente', incendio:'Incendio', fuga_gas:'Fuga de gas', delito:'Delito', rina:'Riña', derrumbe:'Derrumbe', inundacion:'Inundación'};
+const UNIDAD_TXT = {ambulancia:'Ambulancia', patrulla:'Patrulla', bomberos:'Bomberos', proteccion_civil:'Protección civil'};
+let foto = null;
+
+// ---------- navegación
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('nav button').forEach(x => x.classList.toggle('act', x === b));
+  ['panel','unidades','bitacora'].forEach(v => $('#v-'+v).classList.toggle('oculto', v !== b.dataset.vista));
+});
+
+// ---------- WebSocket (tiempo real) con reconexión
+function conectar(){
+  const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
+  ws.onopen = () => { $('#dot').classList.add('on'); $('#conTxt').textContent = 'en vivo'; };
+  ws.onclose = () => { $('#dot').classList.remove('on'); $('#conTxt').textContent = 'reconectando…'; setTimeout(conectar, 1500); };
+  ws.onmessage = e => { foto = JSON.parse(e.data); pintar(); };
+}
+conectar();
+
+function pintar(){
+  pintarKpis(); pintarMapa(); pintarIncidentes(); pintarUnidades(); pintarBitacora();
+}
+
+function pintarKpis(){
+  const s = foto.estadisticas, c = s.contadores, pp = s.abiertos_por_prioridad;
+  const k = [
+    ['Abiertos', s.abiertos, s.abiertos > 0 ? 'alerta' : 'ok'],
+    ['P1 abiertos', pp['1'] || 0, (pp['1']||0) > 0 ? 'falla' : 'ok'],
+    ['En espera', s.en_espera, s.en_espera > 0 ? 'falla' : 'ok'],
+    ['Unidades libres', s.unidades_disponibles + ' / 40', s.unidades_disponibles < 5 ? 'falla' : 'ok'],
+    ['Llegada prom.', s.prom_min_llegada + ' min', ''],
+    ['Llegada P1', s.prom_min_llegada_p1 + ' min', s.prom_min_llegada_p1 > 8 ? 'alerta' : ''],
+    ['Cumple meta', s.pct_cumple_meta + '%', s.pct_cumple_meta < 80 ? 'alerta' : 'ok'],
+    ['Cerrados', s.cerrados, ''],
+    ['Duplicadas', c.duplicados || 0, ''],
+    ['Improcedentes', c.improcedentes || 0, ''],
+    ['Reasignaciones', c.reasignaciones || 0, ''],
+    ['Retiros por P1', c.retiros_por_prioridad || 0, ''],
+  ];
+  $('#kpis').innerHTML = k.map(([l,v,e]) => `<div class="kpi"><div class="v" style="color:${e?COLOR[e]:'inherit'}">${v}</div><div class="l">${l}</div></div>`).join('');
+}
+
+function pintarMapa(){
+  const y = v => 12 - v;   // norte arriba
+  let h = '';
+  for (let x=0;x<=20;x+=2) h += `<line x1="${x}" y1="0" x2="${x}" y2="12" stroke="#1a222c" stroke-width="0.03"/>`;
+  for (let v=0;v<=12;v+=2) h += `<line x1="0" y1="${v}" x2="20" y2="${v}" stroke="#1a222c" stroke-width="0.03"/>`;
+  h += `<rect x="9.85" y="0" width="0.3" height="12" fill="#3a2a1a"/>`;
+  [3,9].forEach(p => h += `<rect x="9.6" y="${y(p)-0.15}" width="0.8" height="0.3" fill="#8b97a5"/>`);
+  h += `<text x="10.3" y="0.6" font-size="0.4" fill="#8b6a4a">cañón</text>`;
+  h += `<text x="0.2" y="11.7" font-size="0.4" fill="#4a5563">oeste</text><text x="18.6" y="11.7" font-size="0.4" fill="#4a5563">este</text>`;
+  // líneas unidad → incidente
+  foto.unidades.forEach(u => { if (u.destino && u.pos_mapa) h += `<line x1="${u.pos_mapa[0]}" y1="${y(u.pos_mapa[1])}" x2="${u.destino[0]}" y2="${y(u.destino[1])}" stroke="var(--alerta)" stroke-width="0.04" stroke-dasharray="0.15 0.1" opacity=".6"/>`; });
+  foto.incidentes.filter(i => i.estado !== 'cerrado').forEach(i => {
+    const [x,v] = i.pos, s = 0.28;
+    h += `<path d="M${x} ${y(v)-s} L${x+s} ${y(v)} L${x} ${y(v)+s} L${x-s} ${y(v)} Z" fill="${COLOR_P[i.prioridad]}" stroke="#000" stroke-width="0.03" style="cursor:pointer" onclick="event.stopPropagation();verIncidente('${i.id}')"><title>${i.id} · ${TIPO_TXT[i.tipo]} · P${i.prioridad} · ${i.estado}</title></path>`;
+    if (i.llamadas > 1) h += `<text x="${x+0.3}" y="${y(v)-0.25}" font-size="0.35" fill="#fff">×${i.llamadas}</text>`;
+  });
+  foto.unidades.forEach(u => {
+    const [x,v] = u.pos_mapa;
+    h += `<circle cx="${x}" cy="${y(v)}" r="0.17" fill="${COLOR[ESTADO_UNIDAD[u.estado]]}" stroke="#000" stroke-width="0.03" style="cursor:pointer" onclick="event.stopPropagation();verUnidad('${u.id}')"><title>${u.id} · ${u.estado}</title></circle>`;
+  });
+  $('#mapa').innerHTML = h;
+}
+$('#mapa').addEventListener('click', ev => {
+  const svg = $('#mapa'), pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+  const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+  const f = $('#fNuevo');
+  f.x.value = Math.min(20, Math.max(0, p.x)).toFixed(1);
+  f.y.value = Math.min(12, Math.max(0, 12 - p.y)).toFixed(1);
+  toast(`Ubicación fijada: x=${f.x.value} km, y=${f.y.value} km`);
+});
+
+function pintarIncidentes(){
+  const ab = foto.incidentes.filter(i => i.estado !== 'cerrado').sort((a,b) => a.prioridad - b.prioridad || a.recibido_ms - b.recibido_ms);
+  $('#nAbiertos').textContent = ab.length + ' abiertos';
+  $('#listaInc').innerHTML = ab.length ? ab.map(i => `
+    <div class="inc p${i.prioridad}" onclick="verIncidente('${i.id}')">
+      <div class="t"><span>${i.id} · ${TIPO_TXT[i.tipo]||i.tipo}</span><span class="chip ${ESTADO_INC[i.estado]}">${i.estado.replace('_',' ')}</span></div>
+      <div class="s">P${i.prioridad} · ${esc(i.descripcion)}${i.llamadas>1?' · '+i.llamadas+' llamadas':''}</div>
+      <div class="s">${i.unidad ? 'Unidad '+i.unidad+(i.eta_min!=null?' · ETA '+i.eta_min+' min':'') : 'sin unidad asignada'} · hace ${hace(i.recibido_ms)}</div>
+    </div>`).join('') : '<div class="muted">Sin incidentes abiertos.</div>';
+}
+
+function pintarUnidades(){
+  $('#nUnid').textContent = foto.unidades.length + ' unidades';
+  $('#tUnid').innerHTML = foto.unidades.map(u => `<tr class="click" onclick="verUnidad('${u.id}')">
+    <td><b>${u.id}</b></td><td>${UNIDAD_TXT[u.tipo]}</td>
+    <td><span class="chip ${ESTADO_UNIDAD[u.estado]}">${u.estado.replace(/_/g,' ')}</span></td>
+    <td>${u.incidente||'—'}</td><td>${u.pos_mapa[0].toFixed(1)}, ${u.pos_mapa[1].toFixed(1)}</td>
+    <td>${u.eta_min!=null?u.eta_min.toFixed(1)+' min':'—'}</td>
+    <td><span class="chip ${u.comunicacion==='ok'?'ok':'falla'}">${u.comunicacion}</span></td><td>${u.reinicios}</td></tr>`).join('');
+}
+
+function pintarBitacora(){
+  $('#nBit').textContent = 'últimos eventos';
+  $('#listaBit').innerHTML = foto.bitacora.map(e => `<div class="ev"><span class="seq">#${e.seq}</span><span>${hora(e.ts)}</span><span class="n">${e.evento}</span><span>${e.incidente||''}</span><span class="muted">${esc(resumen(e.datos))}</span><span class="h">${e.hash}</span></div>`).join('');
+}
+
+// ---------- detalle
+async function verIncidente(id){
+  const r = await (await fetch('/api/incidentes/'+id)).json();
+  const i = r.incidente;
+  $('#dlgBody').innerHTML = `<h2 style="margin:0 0 4px">${i.id} · ${TIPO_TXT[i.tipo]}</h2>
+    <div class="muted">${esc(i.descripcion)}</div>
+    <div class="ctrl"><span class="chip">P${i.prioridad}</span><span class="chip ${ESTADO_INC[i.estado]}">${i.estado}</span>
+      <span class="chip">${i.llamadas} llamada(s)</span><span class="chip">unidad: ${i.unidad||'—'}</span>
+      <span class="chip">ubicación: ${i.pos[0].toFixed(1)}, ${i.pos[1].toFixed(1)} km</span></div>
+    <h3 style="font-size:14px;margin:14px 0 0">Línea de tiempo (bitácora)</h3>
+    <div class="tl">${r.linea_de_tiempo.map(e => `<div><b>${hora(e.ts)} · ${e.evento}</b><br><span class="muted">${esc(resumen(e.datos))}</span></div>`).join('')}</div>`;
+  dlg.showModal();
+}
+function verUnidad(id){
+  const u = foto.unidades.find(x => x.id === id);
+  $('#dlgBody').innerHTML = `<h2 style="margin:0 0 6px">${u.id} · ${UNIDAD_TXT[u.tipo]}</h2>
+    <div class="ctrl"><span class="chip ${ESTADO_UNIDAD[u.estado]}">${u.estado}</span><span class="chip ${u.comunicacion==='ok'?'ok':'falla'}">radio ${u.comunicacion}</span><span class="chip">reinicios: ${u.reinicios}</span></div>
+    <p>Base: ${u.base[0].toFixed(1)}, ${u.base[1].toFixed(1)} km · Posición: ${u.pos_mapa[0].toFixed(1)}, ${u.pos_mapa[1].toFixed(1)} km</p>
+    <p>Incidente: ${u.incidente ? `<a href="#" onclick="verIncidente('${u.incidente}');return false" style="color:#79c0ff">${u.incidente}</a>` : '—'} ${u.eta_min!=null?' · ETA '+u.eta_min.toFixed(1)+' min':''}</p>
+    <p class="muted">Último latido: hace ${hace(u.ultimo_latido)}</p>`;
+  dlg.showModal();
+}
+
+// ---------- acciones
+$('#fNuevo').onsubmit = async ev => {
+  ev.preventDefault();
+  const f = ev.target, body = {tipo:f.tipo.value, prioridad:+f.prioridad.value, x:+f.x.value, y:+f.y.value, descripcion:f.descripcion.value || 'Reporte manual'};
+  const r = await post('/api/incidentes', body);
+  toast(r.resultado === 'creado' ? `Incidente ${r.id} creado` : r.resultado === 'duplicado' ? `Llamada duplicada: se sumó a ${r.id}` : r.resultado === 'improcedente' ? 'Llamada improcedente filtrada (no se despacha)' : 'Error: ' + JSON.stringify(r));
+};
+document.querySelectorAll('[data-sim]').forEach(b => b.onclick = async () => toast(resumen(await post('/api/simulacion/'+b.dataset.sim))));
+document.querySelectorAll('[data-caos]').forEach(b => b.onclick = async () => toast('Caos: ' + resumen(await post('/api/caos/'+b.dataset.caos))));
+$('#bVerif').onclick = async () => { const r = await (await fetch('/api/bitacora/verificar')).json(); toast(r.integra ? `Bitácora íntegra: ${r.eventos_verificados} eventos verificados` : `¡Bitácora alterada en el evento #${r.alterado_en}!`); };
+$('#bReset').onclick = async () => { if (confirm('¿Reiniciar el turno? Se limpian los incidentes (la bitácora se conserva).')) { await post('/api/reiniciar'); toast('Turno reiniciado'); } };
+
+async function post(url, body){ const r = await fetch(url, {method:'POST', headers:{'content-type':'application/json'}, body: body ? JSON.stringify(body) : ''}); return r.json(); }
+
+// ---------- utilidades
+function toast(t){ const el = $('#toast'); el.textContent = t; el.style.display = 'block'; clearTimeout(el._t); el._t = setTimeout(() => el.style.display = 'none', 4000); }
+function esc(s){ return String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function hora(ms){ return new Date(ms).toLocaleTimeString('es-MX'); }
+function hace(ms){ const s = Math.max(0, Math.round((Date.now() - ms)/1000)); return s < 60 ? s+' s' : Math.round(s/60)+' min'; }
+function resumen(d){ if (!d || typeof d !== 'object') return String(d ?? ''); return Object.entries(d).map(([k,v]) => k+': '+(Array.isArray(v)?v.map(n=>typeof n==='number'?n.toFixed(1):n).join(','):typeof v==='object'&&v?JSON.stringify(v):v)).join(' · '); }
+</script>
+</body>
+</html>
