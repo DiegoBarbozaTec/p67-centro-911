@@ -1,0 +1,29 @@
+
+=== Gemelo digital 911: consultas ===
+
+C1. ?- decision(inc5, Unidad, Accion, Min).
+    Unidad = amb1, Accion = retirar_de(inc1), Min = 3
+    Ruta: [canon_oeste,puente_norte]
+    Por que no la libre: amb4 tarda 16 min y la meta P1 es 8 min.
+    Retirable: amb1 (atiende inc1 de prioridad 3, llegaria en 3 min)
+    Retirable: amb2 (atiende inc2 de prioridad 2, llegaria en 9 min)
+    amb3 no se retira: trasladando_paciente
+    Queda pendiente: inc1 vuelve a la cola sin unidad (no se olvida).
+
+C2. ?- ruta_mas_rapida(playas, centro, Camino, Min).
+    Camino = [playas,canon_oeste,puente_norte,canon_este,centro], Min = 12
+    Todas las rutas (backtracking): [12-[playas,canon_oeste,puente_norte,canon_este,centro],18-[playas,canon_oeste,puente_sur,canon_este,centro]]
+
+C3. ?- en_riesgo(Inc, Motivo).
+    Inc = inc5, Motivo = sin_unidad
+    Inc = inc3, Motivo = unidad_sin_contacto(pat1)
+    pat1 lleva 600 s sin reportar -> llegada: no_se
+    Refuerzo sugerido para inc3: pat2 (11 min)
+
+C4. ?- setof(I, desatendido(I), L).
+    L = [inc4,inc5]
+
+C5. ?- hipotesis_cierre(canon_oeste, puente_norte, inc5, amb1, Min).
+    amb1 hoy llega a inc5 en 3 min; si cierran ese tramo, en 13 min (meta 8).
+    amb4 a inc5: hoy 16 min; si cierran puente_norte-canon_este, 28 min.
+
