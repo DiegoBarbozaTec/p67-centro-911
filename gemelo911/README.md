@@ -16,7 +16,7 @@
 | 💻 Código del gemelo | [DiegoBarbozaTec/p67-centro-911 · gemelo911](https://github.com/DiegoBarbozaTec/p67-centro-911/tree/main/gemelo911) |
 | 🌐 Gemelo en vivo (AWS EC2 ARM64) | [http://44.197.198.47:8082](http://44.197.198.47:8082) (instancia `centro-911`, la misma del proyecto en Erlang; el panel Erlang sigue en el 8080) |
 | 🎨 Diseño en Google Stitch | [Proyecto en Stitch](https://stitch.google.com/projects/8437014351925091127) |
-| 🎬 Demo en video | _(se agrega al grabar el video)_ |
+| 🎬 Demo en video | [Video en Loom](https://www.loom.com/share/afa9eeb1bb614f2e87f191d3c79684f9) |
 | ⚙️ Fase 1 (Erlang/OTP) | [gist del proyecto #67 en Erlang](https://gist.github.com/DiegoBarbozaTec/28afdf1678d827d0e5f998622c94b8e7) |
 
 
