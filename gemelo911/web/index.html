@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gemelo Digital 911</title>
+<style>
+  :root{
+    --bg:#0b0e12; --card:#141a21; --card2:#1a222b; --line:#26303b; --text:#e6e9ef; --muted:#8b97a5;
+    --ok:#3fb950; --warn:#d29922; --bad:#f85149; --info:#58a6ff; --violet:#a371f7;
+    --prolog:#e6a23c; --python:#6cb6ff;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  header{position:sticky;top:0;z-index:5;background:rgba(11,14,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  .top{max-width:1200px;margin:0 auto;padding:12px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .logo{background:var(--bad);color:#fff;font-weight:800;border-radius:8px;padding:3px 9px}
+  h1{font-size:17px;margin:0}
+  h1 small{display:block;color:var(--muted);font-weight:400;font-size:12px}
+  select{margin-left:auto;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;min-height:44px;max-width:100%}
+  main{max-width:1200px;margin:0 auto;padding:16px;display:grid;gap:16px}
+  .grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;min-width:0}
+  .card h2{font-size:15px;margin:0 0 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .tag{font:600 11px var(--mono);padding:2px 8px;border-radius:999px;border:1px solid}
+  .tag.pl{color:var(--prolog);border-color:#5a4220}.tag.py{color:var(--python);border-color:#1f3a5a}
+  .desc{color:var(--muted);margin:0}
+  .figure{aspect-ratio:9/5.6;background:#0f1216;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .figure img{width:100%;height:100%;object-fit:contain;display:block}
+  .figure.bar{aspect-ratio:9/4.2}
+  .leg{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-top:8px}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle}
+  .list{display:flex;flex-direction:column;gap:8px}
+  .item{background:var(--card2);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:10px;padding:10px 12px}
+  .item.p1{border-left-color:var(--bad)}.item.p2{border-left-color:var(--warn)}.item.p3{border-left-color:var(--info)}
+  .item b{font-family:var(--mono)}
+  .muted{color:var(--muted);font-size:13px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+  .chip{font:12px var(--mono);border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--muted)}
+  .chip.ok{color:var(--ok);border-color:#1f4d2a}.chip.warn{color:var(--warn);border-color:#5a4a1a}.chip.bad{color:var(--bad);border-color:#5a2424}.chip.info{color:var(--info);border-color:#1f3a5a}.chip.vio{color:var(--violet);border-color:#3d2b63}
+  .sol{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--card2)}
+  .sol.best{border-color:#2d6a3a}
+  .sol ul{margin:8px 0 0;padding-left:18px}.sol li{margin:4px 0}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  button{background:var(--card2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font:inherit;min-height:44px;cursor:pointer}
+  button:hover{border-color:var(--muted)} button:focus-visible,select:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:700px){.two{grid-template-columns:1fr}}
+  .how{margin-top:10px;display:flex;gap:6px;align-items:center;font:12px var(--mono);color:var(--muted);flex-wrap:wrap}
+  .how .pl{color:var(--prolog)} .how .py{color:var(--python)}
+  table{width:100%;border-collapse:collapse;font-size:13px} th,td{text-align:left;padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:500}
+  .scroll{overflow-x:auto}
+  .q{border-bottom:1px solid var(--line);padding:10px 0}.q:last-child{border:0}
+  code{font-family:var(--mono);font-size:12px;color:var(--prolog)}
+  .hidden{display:none}
+  footer{max-width:1200px;margin:0 auto;padding:8px 16px 32px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header><div class="top">
+  <span class="logo">911</span>
+  <h1>Gemelo Digital · Centro de Emergencias Tijuana<small>Prolog deduce y explica · Python solo dibuja</small></h1>
+  <select id="esc" aria-label="Escenario"></select>
+</div></header>
+
+<main>
+  <section class="card"><h2 id="titulo"></h2><p class="desc" id="descripcion"></p></section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Mapa de la red <span class="tag py">Python · matplotlib</span></h2>
+      <div class="figure"><img id="mapa" alt="Mapa de la red con unidades e incidentes"></div>
+      <div class="leg">
+        <span><i class="dot" style="background:var(--ok)"></i>disponible</span>
+        <span><i class="dot" style="background:var(--warn)"></i>en camino</span>
+        <span><i class="dot" style="background:var(--info)"></i>en escena</span>
+        <span><i class="dot" style="background:var(--violet)"></i>trasladando</span>
+        <span><i class="dot" style="background:var(--bad)"></i>fuera de servicio</span>
+        <span>◆ incidente · línea blanca = ruta elegida</span>
+      </div>
+      <div class="how"><span class="pl">grafica_mapa/2</span>→<span class="py">graficas.mapa</span></div>
+    </section>
+    <section class="card">
+      <h2>Incidentes abiertos</h2>
+      <div class="list" id="incidentes"></div>
+    </section>
+  </div>
+
+  <section class="card" id="cardDespacho">
+    <h2>Despacho y explicación <span class="tag pl">decide/3</span></h2>
+    <div id="despacho"></div>
+    <div class="two">
+      <div><h2 style="margin-top:10px">¿Por qué no las otras?</h2><div class="list" id="porqueno"></div></div>
+      <div><h2 style="margin-top:10px">¿Qué falta? <span class="tag pl">que_falta/2</span></h2><div class="list" id="quefalta"></div>
+        <div class="figure bar" style="margin-top:12px"><img id="llegadas" alt="Tiempo de llegada de cada unidad"></div>
+        <div class="how"><span class="pl">grafica_llegadas/2</span>→<span class="py">graficas.llegadas</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card hidden" id="cardLlamadas">
+    <h2>Llamadas agrupadas <span class="tag pl">mismo_incidente/4</span></h2>
+    <div id="llamadas"></div>
+  </section>
+
+  <section class="card hidden" id="cardContacto">
+    <h2>Unidades en camino: ¿llegan? <span class="tag pl">estado_llegada/3</span></h2>
+    <div class="list" id="contacto"></div>
+  </section>
+
+  <section class="card hidden" id="cardHipotesis">
+    <h2>Hipótesis <span class="tag pl">si_pasara/4</span></h2>
+    <p class="desc" id="hipTexto"></p>
+    <div class="btns"><button id="btnHip">Probar la hipótesis</button></div>
+    <div class="two" id="hip" style="margin-top:12px"></div>
+  </section>
+
+  <section class="card">
+    <h2>Unidades</h2>
+    <div class="scroll"><table><thead><tr><th>Unidad</th><th>Tipo</th><th>Estado</th><th>Último reporte</th><th>Incidente</th></tr></thead><tbody id="unidades"></tbody></table></div>
+  </section>
+
+  <section class="card">
+    <h2>Las 5 preguntas, mismas reglas</h2>
+    <div class="btns"><button id="btnPreg">Contestar las 5 preguntas</button></div>
+    <div id="preguntas"></div>
+  </section>
+</main>
+<footer>Ninguna regla vive en esta página: todo lo que se muestra lo deduce el gemelo en Prolog. Proyecto #67 · Diego Antonio Barboza Carballo · 23212702</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mmss = s => `${Math.floor(s/60)} min ${String(s%60).padStart(2,'0')} s`;
+const chipEstado = {disponible:'ok', en_camino:'warn', despachada:'warn', en_escena:'info', trasladando:'vio', fuera_de_servicio:'bad'};
+let estado = null;
+
+async function api(p){ const r = await fetch(p); return r.json(); }
+
+async function cargarEscenarios(){
+  const l = await api('/api/escenarios');
+  $('#esc').innerHTML = l.map(e => `<option value="${e.id}" ${e.activo?'selected':''}>${esc(e.titulo)}</option>`).join('');
+}
+$('#esc').onchange = async e => { estado = await api('/api/escenario?nombre=' + e.target.value); pintar(); };
+
+async function pintar(){
+  if(!estado) estado = await api('/api/estado');
+  const t = Date.now();
+  $('#titulo').textContent = estado.titulo; $('#descripcion').textContent = estado.descripcion;
+  $('#mapa').src = estado.janus ? `/grafica/mapa?t=${t}` : '';
+  $('#incidentes').innerHTML = estado.incidentes.map(i => `
+    <div class="item p${i.prioridad}"><b>${esc(i.id)}</b> · ${esc(i.tipo)} en ${esc(i.punto)} <span class="muted">(${esc(i.zona)})</span>
+      <div class="chips"><span class="chip">P${i.prioridad}</span>
+        ${i.unidades.map(u=>`<span class="chip info">${esc(u)}</span>`).join('') || '<span class="chip bad">sin unidad</span>'}
+        ${i.situaciones.map(s=>`<span class="chip warn">${esc(s)}</span>`).join('')}</div></div>`).join('') || '<p class="muted">Sin incidentes abiertos.</p>';
+  $('#unidades').innerHTML = estado.unidades.map(u => `<tr><td><b>${esc(u.id)}</b></td><td>${esc(u.tipo)}</td>
+    <td><span class="chip ${chipEstado[u.estado]||''}">${esc(u.estado)}</span></td>
+    <td>${esc(u.punto)} · hace ${mmss(u.silencio)}</td><td>${esc(u.incidente ?? '—')}</td></tr>`).join('');
+
+  const hayFoco = estado.foco.length > 0;
+  $('#cardDespacho').classList.toggle('hidden', !hayFoco);
+  if(hayFoco) pintarDespacho();
+  $('#cardLlamadas').classList.toggle('hidden', estado.escenario !== 's3_llamadas');
+  if(estado.escenario === 's3_llamadas') pintarLlamadas();
+  const hayCamino = estado.unidades.some(u => u.llegada);
+  $('#cardContacto').classList.toggle('hidden', !hayCamino);
+  if(hayCamino) pintarContacto();
+  $('#cardHipotesis').classList.toggle('hidden', !estado.hipotesis);
+  if(estado.hipotesis){ $('#hipTexto').textContent = estado.hipotesis.texto; $('#hip').innerHTML=''; }
+}
+
+async function pintarDespacho(){
+  const d = await api('/api/despacho');
+  $('#llegadas').src = estado.janus ? `/grafica/llegadas?t=${Date.now()}` : '';
+  const sols = d.soluciones.map((s,k) => `
+    <div class="sol ${k===0?'best':''}"><b>${k===0?'Mejor reparto':'Alternativa '+k}</b>
+      <span class="chip ${s.completo==='si'?'ok':'bad'}">${s.completo==='si'?'completo':'incompleto'}</span>
+      <ul>${s.explicacion.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`).join('');
+  const v = d.voraz ? `<div class="sol"><b>Comparación: reparto voraz</b> <span class="chip ${d.voraz.sin_cubrir.length?'bad':'ok'}">${d.voraz.sin_cubrir.length?'deja sin cubrir':'cubre'}</span>
+      <p class="muted">${esc(d.voraz.texto)}</p>
+      <div class="chips">${d.voraz.asignaciones.map(a=>`<span class="chip">${esc(a.unidad)}→${esc(a.incidente)} (${mmss(a.eta)})</span>`).join('')}
+      ${d.voraz.sin_cubrir.map(f=>`<span class="chip bad">falta ${esc(f.tipo)} en ${esc(f.incidente)}</span>`).join('')}</div></div>` : '';
+  $('#despacho').innerHTML = `<p class="muted">Repartos completos encontrados: <b>${d.total_completos}</b> (se muestran hasta 6, el mejor primero).</p>` + sols + v;
+  $('#porqueno').innerHTML = d.por_que_no.map(p=>`<div class="item"><b>${esc(p.unidad)}</b>: ${esc(p.texto)}</div>`).join('') || '<p class="muted">—</p>';
+  $('#quefalta').innerHTML = d.que_falta.map(p=>`<div class="item"><b>${esc(p.incidente)}</b>: ${esc(p.texto)}</div>`).join('');
+}
+
+async function pintarLlamadas(){
+  const d = await api('/api/llamadas');
+  const g = d.grupos.map(g => `<div class="item p${g.incidente.prioridad}"><b>Un solo incidente</b> con ${g.incidente.llamadas} llamadas: ${g.llamadas.map(esc).join(', ')}
+      <div class="chips"><span class="chip">${esc(g.incidente.tipo)} en ${esc(g.incidente.punto)}</span><span class="chip">P${g.incidente.prioridad}</span>
+      ${g.incidente.necesita.map(n=>`<span class="chip info">${n.cantidad} ${esc(n.tipo)}</span>`).join('')}</div></div>`).join('');
+  const du = d.dudosas.map(x => `<div class="item p2"><b>Dudosa</b> · ${esc(x.texto)}
+      <div class="chips"><span class="chip warn">no se sabe</span><span class="chip ${x.alcanzan_para_dos==='si'?'ok':'bad'}">¿alcanzan unidades para dos accidentes? ${esc(x.alcanzan_para_dos)}</span></div></div>`).join('');
+  const tabla = `<div class="scroll"><table><thead><tr><th>Llamada</th><th>Lugar</th><th>Segundo</th><th>Reporta</th></tr></thead><tbody>${
+    d.llamadas.map(l=>`<tr><td><b>${esc(l.id)}</b></td><td>${esc(l.punto)}</td><td>${l.segundo}</td><td>${esc(l.tipo)} · ${l.vehiculos} vehículos · ${l.lesionados} lesionados</td></tr>`).join('')}</tbody></table></div>`;
+  const costos = `<h2 style="margin-top:14px">Qué cuesta equivocarse</h2><div class="list">${d.costos.map(c=>`<div class="item">${esc(c.texto)}</div>`).join('')}</div>`;
+  $('#llamadas').innerHTML = `<div class="list">${g}${du}</div><h2 style="margin-top:14px">Todas las llamadas</h2>${tabla}${costos}`;
+}
+
+async function pintarContacto(){
+  const d = await api('/api/sin_contacto');
+  $('#contacto').innerHTML = d.map(x => `<div class="item ${x.resultado==='no_se'?'p1':x.resultado==='llega'?'p3':'p1'}">
+      <span class="chip ${x.resultado==='llega'?'ok':x.resultado==='no_se'?'warn':'bad'}">${esc(x.resultado.replace('_',' '))}</span> ${esc(x.texto)}
+      ${x.refuerzo?`<p class="muted" style="margin:6px 0 0">${esc(x.refuerzo.texto)}</p>`:''}
+      <p class="muted" style="margin:4px 0 0">Pedir refuerzo: <code>${esc(x.pedir_refuerzo)}</code></p></div>`).join('');
+}
+
+$('#btnHip').onclick = async () => {
+  const h = estado.hipotesis; const q = new URLSearchParams(h); q.delete('texto');
+  const d = await api('/api/hipotesis?' + q);
+  const caja = (t, s, ll) => `<div class="sol"><b>${t}</b><ul>${(s.explicacion||[]).map(x=>`<li>${esc(x)}</li>`).join('')}${(ll||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;
+  $('#hip').innerHTML = caja('Hoy', d.antes, d.llegada_antes) + caja('Si pasara: ' + esc(d.cambio), d.despues, d.llegada_despues);
+};
+
+$('#btnPreg').onclick = async () => {
+  const d = await api('/api/preguntas');
+  $('#preguntas').innerHTML = d.map(p => `<div class="q"><b>${p.n}. ${esc(p.pregunta)}</b>
+    <div class="muted">Escenario ${esc(p.escenario)} · <code>?- ${esc(p.consulta)}</code></div><div>${esc(p.respuesta)}</div></div>`).join('');
+};
+
+cargarEscenarios().then(pintar);
+</script>
+</body>
+</html>
