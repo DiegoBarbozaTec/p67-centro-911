@@ -13,11 +13,18 @@
 
 | Recurso | Enlace |
 |---|---|
-| 💻 Código del gemelo | URL_REPO |
-| 🌐 Gemelo en vivo (AWS EC2 ARM64) | URL_EN_VIVO |
-| 🎨 Diseño en Google Stitch | URL_STITCH |
-| 🎬 Demo en video | URL_LOOM |
+| 💻 Código del gemelo | [DiegoBarbozaTec/p67-centro-911 · gemelo911](https://github.com/DiegoBarbozaTec/p67-centro-911/tree/main/gemelo911) |
+| 🌐 Gemelo en vivo (AWS EC2 ARM64) | [http://44.197.198.47:8082](http://44.197.198.47:8082) (instancia `centro-911`, la misma del proyecto en Erlang; el panel Erlang sigue en el 8080) |
+| 🎨 Diseño en Google Stitch | [Proyecto en Stitch](https://stitch.google.com/projects/8437014351925091127) |
+| 🎬 Demo en video | _(se agrega al grabar el video)_ |
 | ⚙️ Fase 1 (Erlang/OTP) | [gist del proyecto #67 en Erlang](https://gist.github.com/DiegoBarbozaTec/28afdf1678d827d0e5f998622c94b8e7) |
+
+
+### 📸 Capturas
+
+| Situación 1 · retiro de unidad | Situación 5 · sismo |
+|---|---|
+| ![Situación 1](https://raw.githubusercontent.com/DiegoBarbozaTec/p67-centro-911/main/gemelo911/capturas/ui_s1_retiro.png) | ![Situación 5](https://raw.githubusercontent.com/DiegoBarbozaTec/p67-centro-911/main/gemelo911/capturas/ui_s5_sismo.png) |
 
 ---
 
@@ -169,7 +176,7 @@ grafica_mapa(Incs, Archivo) :-
 ## 6. Instalación (AWS Academy, Ubuntu 24.04 ARM64)
 
 ```bash
-git clone URL_REPO
+git clone https://github.com/DiegoBarbozaTec/p67-centro-911.git
 cd p67-centro-911/gemelo911
 bash deploy/instalar.sh          # SWI-Prolog (PPA) + Janus + matplotlib, pruebas y servicio
 ```
